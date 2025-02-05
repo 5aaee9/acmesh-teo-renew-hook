@@ -12,9 +12,14 @@ var certDomain = flag.String("domain", "", "Domain name to use for renewal")
 var tencentSecretId = flag.String("secretid", "", "Tencent cloud secret id")
 var tencentSecretKey = flag.String("secretkey", "", "Tencent cloud secret key")
 var dryRun = flag.Bool("dryrun", false, "Don't really do anything")
+var debug = flag.Bool("verbose", false, "Enable verbose log")
 
 func init() {
 	flag.Parse()
+
+	if *debug || len(os.Getenv("TEO_HOOK_VERBOSE")) > 0 {
+		logrus.SetLevel(logrus.DebugLevel)
+	}
 }
 
 func envValue(keys []string, fallback string) string {
