@@ -22,6 +22,7 @@ func watchHostUpdate(sslClient *ssl.Client, id uint64) {
 			continue
 		}
 
+		logrus.Debugf("UpdateCertificateInstance: %v", res.ToJsonString())
 		total := *res.Response.TotalCount
 		done := *res.Response.SuccessTotalCount + *res.Response.FailedTotalCount
 		if done >= total {

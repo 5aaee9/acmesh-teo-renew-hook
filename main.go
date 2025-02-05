@@ -1,6 +1,8 @@
 package main
 
 import (
+	"time"
+
 	"github.com/sirupsen/logrus"
 	"github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common"
 	"github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common/profile"
@@ -54,12 +56,23 @@ func main() {
 	updateRequest.ExpiringNotificationSwitch = common.Uint64Ptr(0)
 	updateRequest.Repeatable = common.BoolPtr(false)
 	updateRequest.AllowDownload = common.BoolPtr(true)
-	updateResponse, err := sslClient.UpdateCertificateInstance(updateRequest)
-	if err != nil {
-		logrus.Fatalf("Error on update certificate: %s", err)
+	var updateResponse *ssl.UpdateCertificateInstanceResponse
+
+	for {
+		var err error
+		updateResponse, err = sslClient.UpdateCertificateInstance(updateRequest)
+		if err != nil {
+			logrus.Fatalf("Error on update certificate: %s", err)
+		}
+
+		logrus.Debugf("UpdateCertificateInstance: %v", updateResponse.ToJsonString())
+		if *updateResponse.Response.DeployRecordId != 0 {
+			break
+		}
+
+		time.Sleep(time.Second)
 	}
 
-	logrus.Debugf("UpdateCertificateInstance: %v", updateResponse.ToJsonString())
 	watchHostUpdate(sslClient, *updateResponse.Response.DeployRecordId)
 
 	deleteRequest := ssl.NewDeleteCertificateRequest()
