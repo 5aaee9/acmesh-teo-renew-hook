@@ -24,7 +24,7 @@ func main() {
 
 	res, err := sslClient.DescribeCertificates(describeRequest)
 	if err != nil {
-		logrus.Fatal("Error on describe certificate: %s", err)
+		logrus.Fatalf("Error on describe certificate: %s", err)
 	}
 
 	var certId string
@@ -73,7 +73,9 @@ func main() {
 		time.Sleep(time.Second)
 	}
 
-	watchHostUpdate(sslClient, *updateResponse.Response.DeployRecordId)
+	if *updateResponse.Response.DeployStatus != 1 {
+		logrus.Fatalf("UpdateCertificateInstance: bad status => %s", updateResponse.ToJsonString())
+	}
 
 	deleteRequest := ssl.NewDeleteCertificateRequest()
 	deleteRequest.CertificateId = common.StringPtr(certId)
