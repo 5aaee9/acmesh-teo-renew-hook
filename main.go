@@ -56,15 +56,16 @@ func main() {
 	updateRequest.AllowDownload = common.BoolPtr(true)
 	updateResponse, err := sslClient.UpdateCertificateInstance(updateRequest)
 	if err != nil {
-		logrus.Fatal("Error on update certificate: %s", err)
+		logrus.Fatalf("Error on update certificate: %s", err)
 	}
 
-	watchHostUpdate(sslClient, *updateResponse.Response.RequestId)
+	logrus.Debugf("UpdateCertificateInstance: %v", updateResponse.ToJsonString())
+	watchHostUpdate(sslClient, *updateResponse.Response.DeployRecordId)
 
 	deleteRequest := ssl.NewDeleteCertificateRequest()
 	deleteRequest.CertificateId = common.StringPtr(certId)
 	_, err = sslClient.DeleteCertificate(deleteRequest)
 	if err != nil {
-		logrus.Fatal("Error on delete certificate: %s", err)
+		logrus.Fatalf("Error on delete certificate: %s", err)
 	}
 }
