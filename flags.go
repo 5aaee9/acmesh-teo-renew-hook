@@ -38,7 +38,7 @@ func envValue(keys []string, fallback string) string {
 }
 
 func getCertDomain() string {
-	return envValue([]string{"Le_Domain"}, *certDomain)
+	return envValue([]string{"TENCENT_OVERRIDE_DOMAIN", "Le_Domain"}, *certDomain)
 }
 
 func getTencentClient() *common.Credential {

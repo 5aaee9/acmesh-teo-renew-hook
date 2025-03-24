@@ -38,7 +38,22 @@ func main() {
 
 	if certId == "" {
 		logrus.Fatal("No certificate found")
-		// TODO: create cert with this domain
+
+		if *dryRun {
+			return
+		}
+
+		createReq := ssl.NewUploadCertificateRequest()
+		createReq.CertificatePrivateKey = common.StringPtr(readCertKey())
+		createReq.CertificatePublicKey = common.StringPtr(readCertFullchain())
+		createReq.Repeatable = common.BoolPtr(false)
+		res, err := sslClient.UploadCertificate(createReq)
+		if err != nil {
+			logrus.Fatalf("create cert failed: %v", err)
+		}
+
+		logrus.Infof("create new cert with id: %s", *res.Response.CertificateId)
+		return
 	}
 
 	logrus.Infof("Tencent SSL certificate id: %s", certId)
